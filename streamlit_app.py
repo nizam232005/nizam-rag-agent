@@ -14,7 +14,7 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-LLM_MODEL = "gemini-2.0-flash"
+LLM_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 # ---------------------------------------------------------------------------
 # Page setup

@@ -21,7 +21,7 @@ load_dotenv()
 # Gemini client for RAG answer generation
 # ---------------------------------------------------------------------------
 gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-LLM_MODEL = "gemini-2.0-flash"
+LLM_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 # ---------------------------------------------------------------------------
 # Inngest client
