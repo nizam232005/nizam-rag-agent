@@ -89,7 +89,7 @@ A Retrieval-Augmented Generation (RAG) agent that ingests PDF documents, stores 
 | POST   | `/query`       | Submit a question (async via Inngest)|
 | POST   | `/api/inngest` | Inngest webhook endpoint             |
 
-## Deployment (Railway + Qdrant Cloud + Inngest Cloud)
+## Deployment (Render + Streamlit Community Cloud + Qdrant Cloud + Inngest Cloud)
 
 ### 1. Set up Qdrant Cloud
 
@@ -101,45 +101,56 @@ A Retrieval-Augmented Generation (RAG) agent that ingests PDF documents, stores 
 
 1. Sign up at [inngest.com](https://inngest.com)
 2. Create a new app
-3. Copy the **Event Key** and **Signing Key**
+3. Copy the **Event Key** (under Manage → Keys) and **Signing Key**
 
-### 3. Deploy to Railway
+### 3. Deploy FastAPI Backend to Render (Free)
 
 1. Push your code to GitHub
-2. Go to [railway.app](https://railway.app) and create a new project
-3. **Create Service 1 — FastAPI Backend:**
-   - Connect your GitHub repo
-   - Railway will detect the `Dockerfile` automatically
-   - Set environment variables:
-     ```
-     GEMINI_API_KEY=your_key
-     QDRANT_URL=https://your-cluster.cloud.qdrant.io
-     QDRANT_API_KEY=your_qdrant_key
-     INNGEST_EVENT_KEY=your_event_key
-     INNGEST_SIGNING_KEY=your_signing_key
-     INNGEST_ENV=production
-     ```
-   - Note the deployed URL (e.g., `https://rag-api-xxx.up.railway.app`)
+2. Go to [render.com](https://render.com) and sign up (free)
+3. Click **"New +"** → **"Web Service"**
+4. Connect your GitHub repo (`rag-agent`)
+5. Configure:
+   - **Name**: `rag-agent-api`
+   - **Runtime**: Docker
+   - **Dockerfile Path**: `./Dockerfile`
+   - **Plan**: Free
+6. Add **Environment Variables**:
+   ```
+   GEMINI_API_KEY=your_key
+   QDRANT_URL=https://your-cluster.cloud.qdrant.io
+   QDRANT_API_KEY=your_qdrant_key
+   INNGEST_EVENT_KEY=your_event_key
+   INNGEST_SIGNING_KEY=your_signing_key
+   INNGEST_ENV=production
+   ```
+7. Click **"Create Web Service"**
+8. Note the deployed URL (e.g., `https://rag-agent-api.onrender.com`)
 
-4. **Create Service 2 — Streamlit Frontend:**
-   - Add a new service from the same repo
-   - Set the Dockerfile path to `Dockerfile.streamlit`
-   - Set environment variables:
-     ```
-     GEMINI_API_KEY=your_key
-     QDRANT_URL=https://your-cluster.cloud.qdrant.io
-     QDRANT_API_KEY=your_qdrant_key
-     API_BASE_URL=https://rag-api-xxx.up.railway.app
-     ```
+### 4. Deploy Streamlit Frontend to Streamlit Community Cloud (Free)
 
-5. **Connect Inngest Cloud:**
-   - In Inngest Cloud dashboard, set the app URL to:
-     `https://rag-api-xxx.up.railway.app/api/inngest`
+1. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub
+2. Click **"New app"**
+3. Select your repo, branch (`master`), and main file (`streamlit_app.py`)
+4. Go to **"Advanced settings"** → **"Secrets"** and paste:
+   ```toml
+   GEMINI_API_KEY = "your_key"
+   QDRANT_URL = "https://your-cluster.cloud.qdrant.io"
+   QDRANT_API_KEY = "your_qdrant_key"
+   API_BASE_URL = "https://rag-agent-api.onrender.com"
+   ```
+5. Click **"Deploy"**
+
+### 5. Connect Inngest Cloud
+
+In the Inngest Cloud dashboard, enter the App URL:
+```
+https://rag-agent-api.onrender.com/api/inngest
+```
 
 ### Environment Variables Reference
 
 | Variable              | Required | Description                                |
-|-----------------------|----------|--------------------------------------------|
+|-----------------------|----------|-------------------------------------------|
 | `GEMINI_API_KEY`      | ✅       | Google Gemini API key                      |
 | `QDRANT_URL`          | ✅ (prod)| Qdrant Cloud cluster URL                   |
 | `QDRANT_API_KEY`      | ✅ (prod)| Qdrant Cloud API key                       |
@@ -151,3 +162,4 @@ A Retrieval-Augmented Generation (RAG) agent that ingests PDF documents, stores 
 ## License
 
 MIT
+
