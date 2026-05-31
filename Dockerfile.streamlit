@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+WORKDIR /app
+
+# Copy dependency files first for caching
+COPY pyproject.toml uv.lock .python-version ./
+
+# Install dependencies
+RUN uv sync --frozen --no-dev
+
+# Copy app source
+COPY *.py ./
+
+# Expose port (Railway sets $PORT)
+EXPOSE 8501
+
+# Run Streamlit
+CMD uv run streamlit run streamlit_app.py --server.port=${PORT:-8501} --server.address=0.0.0.0 --server.headless=true

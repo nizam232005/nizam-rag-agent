@@ -1,0 +1,10 @@
+.venv
+__pycache__
+*.py[oc]
+.git
+.gitignore
+.env
+qdrant_storage
+README.md
+running_cmds.txt
+Dockerfile.streamlit

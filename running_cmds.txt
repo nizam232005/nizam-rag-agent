@@ -1,0 +1,24 @@
+# ===== Local Development =====
+
+# 1. Start Qdrant (Docker)
+docker run -p 6333:6333 -p 6334:6334 -v %cd%\qdrant_storage:/qdrant/storage qdrant/qdrant
+
+# 2. Start FastAPI backend
+uv run uvicorn main:app --reload
+
+# 3. Start Inngest Dev Server
+npx inngest-cli@latest dev --no-discovery -u http://127.0.0.1:8000/api/inngest
+
+# 4. Start Streamlit UI
+uv run streamlit run streamlit_app.py
+
+# ===== Docker Build =====
+
+# Build FastAPI image
+docker build -t rag-api .
+
+# Build Streamlit image
+docker build -f Dockerfile.streamlit -t rag-streamlit .
+
+# ===== PowerShell (Docker with volume mount) =====
+docker run -p 6333:6333 -p 6334:6334 -v "${PWD}\qdrant_storage:/qdrant/storage" qdrant/qdrant
